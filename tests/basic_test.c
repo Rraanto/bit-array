@@ -4,8 +4,11 @@
 #include "bit_array.h"
 
 int main() {
+
+  int size = 10;
+
   bit_array bb;
-  int init_success = init_bit_array(10, &bb) == 0;
+  int init_success = init_bit_array(size, &bb) == 0;
   if (!init_success)
     printf("Bit array initialisation failed\n");
 
@@ -43,6 +46,23 @@ int main() {
   printf("\n");
 
   print_bit_array(&bb);
+
+  printf("Checking if any_in_range is the same as !is_range_available for "
+         "every valid range\n");
+
+  for (int start = 0; start < size - 1; start++) {
+    for (int end = start + 1; end < size; end++) {
+      printf("range %d-%d: ", start, end);
+      if (_any_in_range(start, end, &bb) !=
+          !is_range_available(start, end, &bb))
+        printf("Error: different query results for _any_in_range and "
+               "is_range_available\n",
+               start, end);
+      else
+        printf("Ok\n");
+    }
+  }
+
   destroy_bit_array(&bb);
   return 0;
 }

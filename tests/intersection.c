@@ -34,7 +34,17 @@ int main() {
 
   logical_and(&first, &second, &intersection);
 
+  printf("First array: \n");
+  print_bit_array(&first);
+  printf("\n");
+
+  printf("Second array: \n");
+  print_bit_array(&second);
+  printf("\n");
+
+  printf("Intersection: \n");
   print_bit_array(&intersection);
+  printf("\n");
 
   destroy_bit_array(&first);
   destroy_bit_array(&second);

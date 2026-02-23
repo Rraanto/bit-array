@@ -49,7 +49,7 @@ int set_range_busy(size_t start, size_t end, bit_array *bb) {
   if (end >= bb->_size)
     return 1;
 
-  // sets all the bits start, ... end-1 to 1 (true)
+  // sets all the bits start, ... end to 1 (true)
   if (start < 0 || end >= bb->_size || end - start >= bb->_size)
     return 1;
   for (int i = start; i <= end; i++)
@@ -65,7 +65,7 @@ int set_range_free(size_t start, size_t end, bit_array *bb) {
   if (end >= bb->_size)
     return 1;
 
-  // sets all the bits start, ... end-1 to false
+  // sets all the bits start, ... end to false
   for (size_t i = start; i <= end; i++) {
     bb->_data[i] = false;
   }

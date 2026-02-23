@@ -42,6 +42,13 @@ int init_bit_array(int size, bit_array *bb);
 void destroy_bit_array(bit_array *bb);
 
 /*
+ * Returns the size of the bit array
+ *
+ * ATTENTION: undefined behavior if bb is NULL
+ */
+size_t bit_array_size(const bit_array *bb);
+
+/*
  * setter methods
  *
  * for all of the following setter methods:
@@ -85,23 +92,31 @@ int set_bit_free(size_t bit, bit_array *bb); // sets that bit to 0 (false)
  * returns 1 if range [start, ... end-1, end] contains 1
  * returns 0 otherwise
  */
-int _any_in_range(size_t start, size_t end, bit_array *bb);
+int _any_in_range(size_t start, size_t end, const bit_array *bb);
 
 /*
  * Checks validity of the parameters [0 <= start < end < bb->_sze, bb != NULL]
  * and returns !_any_in_range(start, end, bb)
  */
-int is_range_available(size_t start, size_t end, bit_array *bb);
+int is_range_available(size_t start, size_t end, const bit_array *bb);
 
 /*
  * Checks validity of the parameter i and returns
  * !_any_in_range(i, i, bb)
  */
-int is_bit_available(size_t i, bit_array *bb);
+int is_bit_available(size_t i, const bit_array *bb);
 
 /*
- * Finds the next bit with value 1 (true)
+ * Finds the next bit with value 1 (true) starting from index start
+ * start is included in the search range
+ *
+ * if start is an invalid (greater than bb->_size)
+ * or if bb is a NULL pointer -1 is returned
+ *
+ * if none is found bb->_size is returned
+ * if some bit is found, the index to that bit is returned
  */
+int find_next_busy_bit(size_t start, const bit_array *bb);
 
 /*
  * Operations between arrays
@@ -115,7 +130,8 @@ int is_bit_available(size_t i, bit_array *bb);
  *
  * 0 is returned if the operation work successfully
  */
-int logical_and(bit_array *first, bit_array *second, bit_array *out);
+int logical_and(const bit_array *first, const bit_array *second,
+                bit_array *out);
 
 /*
  * Printing contents of a bit array
@@ -128,6 +144,6 @@ int logical_and(bit_array *first, bit_array *second, bit_array *out);
  *
  * does not print a newline at the end
  */
-void print_bit_array(bit_array *bb);
+void print_bit_array(const bit_array *bb);
 
 #endif

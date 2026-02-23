@@ -6,3 +6,6 @@ Current implementation:
 
 For range queries: 
 Any operation on ranges `[start, end]` are inclusive (operates on `start, start+1, ... end-1, end`)
+
+## Undefined behavior 
+`size_t bit_array_size(const bit_array *bb)` does not check if `bb == NULL`, and will execute `bb->_size`. 

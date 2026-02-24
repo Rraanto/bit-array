@@ -167,6 +167,22 @@ int logical_and(const bit_array *first, const bit_array *second,
   return 0;
 }
 
+int logical_or(const bit_array *first, const bit_array *second,
+               bit_array *out) {
+  if (first == NULL || second == NULL || out == NULL)
+    return 1;
+  if (first->_data == NULL || second->_data == NULL || out->_data == NULL)
+    return 1;
+  if (first->_size != second->_size || out->_size != first->_size)
+    return 1;
+
+  // iterate on indexes and compute logical or per bit
+  for (size_t i = 0; i < first->_size; i++) {
+    out->_data[i] = first->_data[i] || second->_data[i];
+  }
+  return 0;
+}
+
 /*
  * Utility functions
  *

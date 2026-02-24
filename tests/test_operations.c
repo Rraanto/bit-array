@@ -11,7 +11,7 @@
 #include "test_utils.h"
 
 int main(void) {
-  printf("== Operations tests (logical_and) ==\n");
+  printf("== Operations tests (logical_and / logical_or) ==\n");
 
   const int size_int = 10;
   const size_t n = (size_t)size_int;
@@ -57,6 +57,53 @@ int main(void) {
   /* Size mismatch should fail */
   bit_array small = make_bit_array_or_die(5);
   CHECK("logical_and size mismatch fails", logical_and(&a, &small, &out) == 1);
+  destroy_and_check(&small);
+
+  /* OR Case 1: identical arrays -> out equals input */
+  clear_all(&a);
+  clear_all(&b);
+  clear_all(&out);
+
+  CHECK("a busy [2,6] (or)", set_range_busy(2, 6, &a) == 0);
+  CHECK("b busy [2,6] (or)", set_range_busy(2, 6, &b) == 0);
+  CHECK("logical_or identical succeeds", logical_or(&a, &b, &out) == 0);
+
+  for (size_t i = 0; i < n; i++) {
+    int expected = is_bit_available(i, &a);
+    check_bit_available(&out, i, expected);
+  }
+
+  /* OR Case 2: disjoint busy ranges -> out contains union */
+  clear_all(&a);
+  clear_all(&b);
+  clear_all(&out);
+
+  CHECK("a busy [0,2] (or)", set_range_busy(0, 2, &a) == 0);
+  CHECK("b busy [5,7] (or)", set_range_busy(5, 7, &b) == 0);
+  CHECK("logical_or disjoint succeeds", logical_or(&a, &b, &out) == 0);
+
+  check_range_available(&out, 0, 2, 0);
+  check_range_available(&out, 3, 4, 1);
+  check_range_available(&out, 5, 7, 0);
+  check_range_available(&out, 8, 9, 1);
+
+  /* OR Case 3: overlap -> out contains all busy bits from both */
+  clear_all(&a);
+  clear_all(&b);
+  clear_all(&out);
+
+  CHECK("a busy [1,4] (or)", set_range_busy(1, 4, &a) == 0);
+  CHECK("b busy [3,6] (or)", set_range_busy(3, 6, &b) == 0);
+  CHECK("logical_or overlap succeeds", logical_or(&a, &b, &out) == 0);
+
+  /* Union is [1,6]. */
+  check_range_available(&out, 1, 6, 0);
+  check_range_available(&out, 0, 0, 1);
+  check_range_available(&out, 7, 9, 1);
+
+  /* OR size mismatch should fail */
+  small = make_bit_array_or_die(5);
+  CHECK("logical_or size mismatch fails", logical_or(&a, &small, &out) == 1);
   destroy_and_check(&small);
 
   destroy_and_check(&a);

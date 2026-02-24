@@ -133,6 +133,8 @@ int find_next_busy_bit(size_t start, const bit_array *bb);
 int logical_and(const bit_array *first, const bit_array *second,
                 bit_array *out);
 
+int logical_or(const bit_array *first, const bit_array *second, bit_array *out);
+
 /*
  * Printing contents of a bit array
  *

@@ -3,6 +3,8 @@
  *
  * Defines a dynamic array of bits with
  * per-bit or per-range availability and comparison queries
+ *
+ * Implementation uses dense 64-bit word storage for efficiency.
  */
 
 #ifndef BIT_ARRAY_H
@@ -10,16 +12,24 @@
 
 #include <stdbool.h>
 #include <stddef.h> // size_t and other frequently used types
+#include <stdint.h> // uint64_t
 #include <stdio.h>
 #include <stdlib.h>
 
 typedef struct bit_array {
   /*
    * Size-safe wrapper to the bit array
+   * Uses dense storage: 64 bits per uint64_t word
    */
-  size_t _size;
-  bool *_data; // true for busy bits, false for available
+  size_t _size;      // Number of bits
+  size_t _num_words; // Number of 64-bit words allocated (_size / 64 rounded up)
+  uint64_t *_data;   // true (1) for busy bits, false (0) for available
 } bit_array;
+
+/* Helper macros for bit manipulation */
+#define WORD_INDEX(bit) ((bit) / 64)
+#define BIT_INDEX(bit) ((bit) % 64)
+#define BIT_MASK(bit) (1ULL << BIT_INDEX(bit))
 
 /*
  * Constructor
@@ -38,6 +48,7 @@ int init_bit_array(int size, bit_array *bb);
  * frees the memory allocated for bb->_data
  * sets bb->_data to NULL
  * sets bb->_size to 0
+ * sets bb->_num_words to 0
  */
 void destroy_bit_array(bit_array *bb);
 
